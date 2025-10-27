@@ -5,7 +5,7 @@ import { generateToken } from "../services/jwt";
 
 const router = Router();
 
-// REGISTER
+// register
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -23,7 +23,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN
+// login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -34,7 +34,8 @@ router.post("/login", async (req, res) => {
     if (!valid) return res.status(400).json({ message: "Invalid credentials" });
 
     const token = generateToken({ userId: user.id, email: user.email });
-    res.json({ token, user });
+    const { passwordHash, ...safeUser } = user;
+    res.json({ token, user: safeUser });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }

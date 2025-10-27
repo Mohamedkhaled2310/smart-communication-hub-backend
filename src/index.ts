@@ -34,6 +34,20 @@ io.on("connection", (socket) => {
     socket.emit("message", message);
   });
 
+  socket.on("typing", ({ senderId, receiverId }) => {
+    const receiverSocket = onlineUsers.get(receiverId);
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("user_typing", { senderId });
+    }
+  });
+  
+  socket.on("stop_typing", ({ senderId, receiverId }) => {
+    const receiverSocket = onlineUsers.get(receiverId);
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("user_stopped_typing", { senderId });
+    }
+  });
+
   socket.on("disconnect", () => {
     for (const [userId, id] of onlineUsers.entries()) {
       if (id === socket.id) onlineUsers.delete(userId);

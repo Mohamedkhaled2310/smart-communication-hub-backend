@@ -9,7 +9,7 @@ router.get("/:conversationId", authenticate, async (req: AuthRequest, res) => {
   try {
     const { conversationId } = req.params;
 
-    // Fetch messages of conversation
+    // fetching messages of conversation
     const messages = await prisma.message.findMany({
       where: {
         OR: [

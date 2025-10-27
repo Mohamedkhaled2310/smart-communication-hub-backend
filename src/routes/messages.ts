@@ -7,6 +7,9 @@ const router = Router();
 // get all messages between 2 users
 router.get("/:receiverId", authenticate, async (req: AuthRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
     const userId = req.user.userId;
     const receiverId = parseInt(req.params.receiverId);
 
@@ -29,6 +32,9 @@ router.get("/:receiverId", authenticate, async (req: AuthRequest, res) => {
 // send a new message
 router.post("/:receiverId", authenticate, async (req: AuthRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "unauthorized" });
+    }
     const senderId = req.user.userId;
     const receiverId = parseInt(req.params.receiverId);
     const { text } = req.body;
