@@ -28,17 +28,41 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
     const token = generateToken({ userId: user.id, email: user.email });
-    const { passwordHash, ...safeUser } = user;
-    res.json({ token, user: safeUser });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // a week
+    });
+
+    const { passwordHash, ...userData } = user;
+    res.json({ user: userData });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+// fetch user info
+  router.get("/me", authenticate, async (req: AuthRequest, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.user!.userId },
+    select: { id: true, name: true, email: true },
+  });
+  res.json(user);
+});
+
+
+// logout
+  router.post("/logout", (req, res) => {
+    res.clearCookie("token");
+    res.json({ message: "Logged out" });
+  });
 
 export default router;

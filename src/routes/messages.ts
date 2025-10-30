@@ -7,24 +7,27 @@ const router = Router();
 // get all messages between 2 users
 router.get("/:receiverId", authenticate, async (req: AuthRequest, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: "unauthorized" });
-    }
-    const userId = req.user.userId;
+    const senderId = req.user?.userId;
     const receiverId = parseInt(req.params.receiverId);
+    const skip = parseInt(req.query.skip as string) || 0;
+    const take = parseInt(req.query.take as string) || 20;
 
+    // get messages both directions (sender ↔ receiver)
     const messages = await prisma.message.findMany({
       where: {
         OR: [
-          { senderId: userId, receiverId },
-          { senderId: receiverId, receiverId: userId },
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
         ],
       },
-      orderBy: { timestamp: "asc" },
+      orderBy: { timestamp: "desc" },
+      skip,
+      take,
     });
 
     res.json(messages);
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to fetch messages" });
   }
 });
