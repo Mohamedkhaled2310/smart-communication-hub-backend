@@ -1,4 +1,4 @@
-# Project Name
+# Smart Communication Hub Backend
 
 A Node.js application built with Express.js, Prisma, and TypeScript. This project provides APIs for authentication, user management, messaging, and insights.
 
