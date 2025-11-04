@@ -41,6 +41,7 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "none" : "lax",
+      domain: "smart-communication-hub-backend-production.up.railway.app",
       maxAge: 7 * 24 * 60 * 60 * 1000, // a week
     });
 
