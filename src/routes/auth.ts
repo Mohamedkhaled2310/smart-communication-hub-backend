@@ -43,6 +43,12 @@ router.post("/login", async (req, res) => {
       sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // a week
     });
+    res.cookie("hasSession", "true", {
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
 
     const { passwordHash, ...userData } = user;
     res.json({ user: userData });
@@ -64,6 +70,7 @@ router.post("/login", async (req, res) => {
 // logout
   router.post("/logout", (req, res) => {
     res.clearCookie("token");
+    res.clearCookie("hasSession");
     res.json({ message: "Logged out" });
   });
 
