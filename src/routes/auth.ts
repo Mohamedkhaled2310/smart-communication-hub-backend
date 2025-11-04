@@ -30,7 +30,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
     const isProduction = process.env.NODE_ENV === "production";
-
+    console.log(isProduction);
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
