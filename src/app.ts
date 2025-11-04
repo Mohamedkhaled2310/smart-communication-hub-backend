@@ -11,8 +11,6 @@ app.use(cors({
   origin: [
     "http://localhost:3000",
     "https://smart-communication-vconnect.vercel.app",
-    "https://*.vercel.app",
-    "https://smart-communication-vconnect-*.vercel.app"
   ],
     credentials: true,
   }));
