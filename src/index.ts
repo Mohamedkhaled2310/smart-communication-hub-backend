@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
     const { senderId, receiverId, text } = payload;
 
     const message = await prisma.message.create({
-      data: { senderId, receiverId, text },
+      data: { senderId, receiverId, text , timestamp: new Date() },
     });
 
     const receiverSocket = onlineUsers.get(receiverId);
@@ -37,14 +37,14 @@ io.on("connection", (socket) => {
   socket.on("typing", ({ senderId, receiverId }) => {
     const receiverSocket = onlineUsers.get(receiverId);
     if (receiverSocket) {
-      io.to(receiverSocket).emit("user_typing", { senderId });
+      io.to(receiverSocket).emit("typing", { senderId });
     }
   });
   
   socket.on("stop_typing", ({ senderId, receiverId }) => {
     const receiverSocket = onlineUsers.get(receiverId);
     if (receiverSocket) {
-      io.to(receiverSocket).emit("user_stopped_typing", { senderId });
+      io.to(receiverSocket).emit("stop_typing", { senderId });
     }
   });
 
