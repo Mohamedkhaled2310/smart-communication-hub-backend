@@ -19,6 +19,7 @@ const onlineUsers = new Map<number, string>();
 io.on("connection", (socket) => {
   socket.on("register", (userId: number) => {
     onlineUsers.set(userId, socket.id);
+    io.emit("user_online", { userId }); 
   });
 
   socket.on("send_message", async (payload) => {
@@ -51,7 +52,11 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     for (const [userId, id] of onlineUsers.entries()) {
-      if (id === socket.id) onlineUsers.delete(userId);
+      if (id === socket.id) {
+      onlineUsers.delete(userId);
+      io.emit("user_offline", { userId });
+     }
+        
     }
   });
 });
