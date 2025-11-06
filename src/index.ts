@@ -37,16 +37,17 @@ io.on("connection", (socket) => {
   socket.on("typing", ({ senderId, receiverId }) => {
     const receiverSocket = onlineUsers.get(receiverId);
     if (receiverSocket) {
-      io.to(receiverSocket).emit("typing", { senderId });
+      io.to(receiverSocket).emit("typing", { senderId, receiverId });
     }
   });
   
   socket.on("stop_typing", ({ senderId, receiverId }) => {
     const receiverSocket = onlineUsers.get(receiverId);
     if (receiverSocket) {
-      io.to(receiverSocket).emit("stop_typing", { senderId });
+      io.to(receiverSocket).emit("stop_typing", { senderId, receiverId });
     }
   });
+  
 
   socket.on("disconnect", () => {
     for (const [userId, id] of onlineUsers.entries()) {
